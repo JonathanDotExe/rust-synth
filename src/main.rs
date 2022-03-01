@@ -1,7 +1,9 @@
-use cpal::traits::HostTrait;
+use cpal::traits::{HostTrait, DeviceTrait};
+use cpal::Sample;
 
-fn process(sample: mut& f32) {
+fn process() -> f32 {
     //TODO audio processing
+    return 0.0;
 }
 
 fn main() {
@@ -17,18 +19,18 @@ fn main() {
 
     let stream = device.build_output_stream(
         &config,
-        move |data: &mut [f32], _ &cpal::OutputCallbackInfo| {
-            for (sample in data.iter_mut()) {
-                process(mut& sample);
+        move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
+            for sample in data.iter_mut() {
+                *sample = Sample::from(&process());
             }
         },
-        move |err| {
-            printLn!("Error while running audio thread!")
-        }
-    )
+        move |_err| {
+            println!("Error while running audio thread!")
+        },
+    );
 
     //Wait
-    printLn!("Press ENTER to stop!")
+    println!("Press ENTER to stop!");
     let mut line = String::new();
-    std::io::stdin().read_line().unwrap(&mut line);
+    std::io::stdin().read_line(&mut line).unwrap();
 }
