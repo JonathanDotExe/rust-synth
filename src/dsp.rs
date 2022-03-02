@@ -34,7 +34,7 @@ impl Oscillator {
     pub fn new() -> Oscillator {
         return Oscillator {
             waveform: WaveForm::Sine,
-            freq: 220.0,
+            freq: 440.0,
             phase: 0.0,
         }
     }
