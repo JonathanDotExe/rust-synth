@@ -5,10 +5,10 @@ pub enum WaveForm {
 }
 
 impl WaveForm {
-    fn synthesize(&self, phase: f32) -> f32{
-        let f: f32 = 0.0;
+    fn synthesize(&mut self, phase: f32) -> f32{
+        let mut f: f32 = 0.0;
         match self {
-            WaveForm::Sine => f = (phase * std::f64::consts::PI as f32).sin(),
+            WaveForm::Sine => f = (phase * (std::f64::consts::PI as f32) * 2.0).sin(),
             WaveForm::Square => {
                 if phase < 0.5 {
                     f = 1.0;
@@ -47,8 +47,9 @@ impl Oscillator {
         }
     }
 
-    pub fn synthesize(&self) -> f32{
-        return self.waveform.synthesize(self.phase);
+    pub fn synthesize(&mut self) -> f32{
+        let sample = self.waveform.synthesize(self.phase);
+        return sample;
     }
 
 }

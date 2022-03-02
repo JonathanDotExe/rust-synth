@@ -17,14 +17,15 @@ fn main() {
     println!("{} / {}", range.min_sample_rate().0, range.max_sample_rate().0);
     let config = range.with_sample_rate(cpal::SampleRate(sample_rate)).config();
     let time_step: f32 = 1.0/(sample_rate as f32);
-    let osc = dsp::Oscillator::new();
+    let mut osc = dsp::Oscillator::new();
 
     let stream = device.build_output_stream(
         &config,
         move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
             for sample in data.iter_mut() {
                 osc.process(time_step);
-                *sample = Sample::from(&osc.synthesize());
+                let s = osc.synthesize() * 0.2;
+                *sample = Sample::from(&s);
             }
         },
         move |_err| {
