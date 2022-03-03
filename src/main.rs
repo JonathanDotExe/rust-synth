@@ -1,6 +1,7 @@
 use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
 use cpal::Sample;
 mod dsp;
+mod voice;
 
 fn main() {
     // Create audio pipeline
@@ -18,7 +19,7 @@ fn main() {
     let channels = range.channels() as u128;
     let config = range.with_sample_rate(cpal::SampleRate(sample_rate)).config();
     let time_step: f32 = 1.0/(sample_rate as f32);
-    let mut osc = dsp::Oscillator::new();
+    let mut osc: dsp::Oscillator = dsp::Oscillator::new();
     let mut sample_count: u128 = 0;
     let mut s = 0.0;
 
@@ -26,7 +27,7 @@ fn main() {
         &config,
         move |data: &mut [f32], _: &cpal::OutputCallbackInfo| { 
             for sample in data.iter_mut() {
-                if (sample_count % channels == 0) {
+                if sample_count % channels == 0 {
                     osc.process(time_step);
                     s = osc.synthesize() * 0.2;
                 }
