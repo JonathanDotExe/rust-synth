@@ -4,9 +4,15 @@ pub enum WaveForm {
     Square,
 }
 
+impl Default for WaveForm {
+    fn default() -> Self {
+        return WaveForm::Sine;
+    }
+}
+
 impl WaveForm {
     fn synthesize(&mut self, phase: f32) -> f32{
-        let mut f: f32 = 0.0;
+        let f: f32;
         match self {
             WaveForm::Sine => f = (phase * (std::f64::consts::PI as f32) * 2.0).sin(),
             WaveForm::Square => {
@@ -23,6 +29,7 @@ impl WaveForm {
     }
 }
 
+#[derive(Default)]
 pub struct Oscillator {
     pub waveform: WaveForm,
     pub freq: f32,

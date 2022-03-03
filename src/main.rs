@@ -2,6 +2,7 @@ use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
 use cpal::Sample;
 mod dsp;
 mod voice;
+mod synth;
 
 fn main() {
     // Create audio pipeline
