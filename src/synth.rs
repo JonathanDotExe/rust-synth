@@ -1,5 +1,6 @@
-mod dsp;
-mod voice;
+use crate::dsp as dsp;
+use crate::voice as voice;
+
 
 pub trait SoundEngine {
     
@@ -9,17 +10,17 @@ pub trait SoundEngine {
 
 #[derive(Default)]
 pub struct SynthVoice {
-    dsp::Oscillator osc;
+    pub osc: dsp::Oscillator,
 }
 
 pub struct SynthEngine {
-    VoiceManager<SynthVoice> voice_mgr;
+    pub voice_mgr: voice::VoiceManager<SynthVoice>,
 }
 
 impl SynthEngine {
-    fn new() -> SynthEngine {
+    pub fn new() -> SynthEngine {
         return SynthEngine {
-            voice_mgr: VoiceManager::new(30),
+            voice_mgr: voice::VoiceManager::new(30),
         };
     }
 }
@@ -28,6 +29,7 @@ impl SoundEngine for SynthEngine {
 
     fn process(time: f32, time_step: f32) -> f32 {
         //TODO process voices
-    };
+        return 0.0;
+    }
 
 }

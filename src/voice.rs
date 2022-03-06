@@ -19,7 +19,7 @@ pub struct Voice<T> where T: Default{
 
 
 impl<T> Voice<T> where T: Default {
-    fn new() -> Voice<T> {
+    pub fn new() -> Voice<T> {
         return Voice::default();
     }
 }
@@ -30,7 +30,7 @@ pub struct VoiceManager<T> where T: Default{
 
 impl<T> VoiceManager<T> where T: Default {
     //Init voice manager with a specific amount of polyphony
-    fn new(size: usize) -> VoiceManager<T> {
+    pub fn new(size: usize) -> VoiceManager<T> {
         let mut mgr: VoiceManager<T> = VoiceManager {
             voices: Vec::new()
         };
