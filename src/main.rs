@@ -45,6 +45,10 @@ fn main() {
     ).unwrap();
     stream.play().unwrap();
 
+    //Audio
+    let mut handler = io::AudioMidiHandler::new();
+    handler.run();
+
     //Wait
     println!("Press ENTER to stop!");
     let mut line = String::new();

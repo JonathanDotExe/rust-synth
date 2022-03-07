@@ -1,10 +1,14 @@
 use midir::{MidiInput, Ignore};
 
-struct AudioMidiHandler {
-    midiin: Box<MidiInput>,
+pub struct AudioMidiHandler {
+    
 }
 
 impl AudioMidiHandler {
+
+    pub fn new() -> AudioMidiHandler {
+        return AudioMidiHandler {};
+    }
 
     pub fn run(&mut self) {
         //Audio
@@ -18,9 +22,9 @@ impl AudioMidiHandler {
             panic!("No MIDI port found!");
         }
         let port = &ports[0];
-        println!("Using port {}!", self.midiin.port_name(&port).unwrap());
+        println!("Using port {}!", midiin.port_name(&port).unwrap());
 
-        let conn = &midiin.connect(port, "App-In", move |stamp, message, _| {
+        let _conn = &midiin.connect(port, "App-In", move |stamp, message, _| {
             println!("Midi Message {}: {:?} (len={}", stamp, message, message.len());
         }, ()).unwrap();
     }
