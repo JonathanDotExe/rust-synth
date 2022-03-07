@@ -4,7 +4,7 @@ use cpal::Sample;
 mod dsp;
 mod voice;
 mod synth;
-
+mod midi;
 
 fn main() {
     // Create audio pipeline
