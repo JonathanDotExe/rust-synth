@@ -5,6 +5,7 @@ mod dsp;
 mod voice;
 mod synth;
 mod midi;
+mod io;
 
 fn main() {
     // Create audio pipeline
