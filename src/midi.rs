@@ -53,7 +53,7 @@ impl MidiMessage {
         }
 
         //Note on with zero velocity => Note off
-        if (message_type == MidiMessageType::NoteOn && second_data == 0) {
+        if message_type == MidiMessageType::NoteOn && second_data == 0 {
             message_type = MidiMessageType::NoteOff;
         }
 

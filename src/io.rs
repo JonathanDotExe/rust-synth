@@ -1,5 +1,7 @@
 use midir::{MidiInput, MidiInputConnection, Ignore};
 use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
+use lockfree::channel::spsc;
+use crate::midi as midi;
 
 pub struct ProcessingInfo {
     sample_rate: u32,
@@ -12,6 +14,8 @@ pub trait AudioMidiProcessor {
 
     fn process(&mut self) -> f64;
 
+    fn recieve_midi(&mut self, msg: midi::MidiMessage);
+
 }
 
 pub struct AudioMidiHandler {
@@ -21,6 +25,9 @@ pub struct AudioMidiHandler {
 impl AudioMidiHandler {
 
     pub fn new<>(processor: Box<dyn AudioMidiProcessor + Send>)-> AudioMidiHandler {
+        //Midi Queue
+        let (sender, reciever) = spsc::create::<midi::MidiMessage>();
+
         //Audio
         // Create audio pipeline
         let host = cpal::default_host();
@@ -47,6 +54,12 @@ impl AudioMidiHandler {
             move |data: &mut [f32], _: &cpal::OutputCallbackInfo| { 
                 for sample in data.iter_mut() {
                     if curr_ch > channels {
+                        //Check midi
+                        let mut msg = reciever.recv();
+                        while msg.is_ok() {
+                            processor.recieve_midi(msg.unwrap());
+                            msg = reciever.recv();
+                        }
                         //Process
                         curr_s = processor.process();
                         curr_ch = 0;
@@ -72,6 +85,10 @@ impl AudioMidiHandler {
 
         let midiconn = midiin.connect(port, "App-In", move |stamp, message, _| {
             println!("Midi Message {}: {:?} (len={}", stamp, message, message.len());
+            let msg = midi::MidiMessage::new(message);
+            if (msg.is_ok()) {
+                sender.send(msg.unwrap());
+            }
         }, ()).unwrap();
 
         return AudioMidiHandler {
