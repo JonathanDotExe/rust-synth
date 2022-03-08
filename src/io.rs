@@ -46,7 +46,6 @@ impl AudioMidiHandler {
             &config,
             move |data: &mut [f32], _: &cpal::OutputCallbackInfo| { 
                 for sample in data.iter_mut() {
-
                     if curr_ch > channels {
                         //Process
                         curr_s = processor.process();
