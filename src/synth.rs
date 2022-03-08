@@ -4,7 +4,7 @@ use crate::voice as voice;
 
 pub trait SoundEngine {
     
-    fn process(time: f32, time_step: f32) -> f32;
+    fn process(time: f64, time_step: f64) -> f64;
 
 }
 
@@ -27,7 +27,7 @@ impl SynthEngine {
 
 impl SoundEngine for SynthEngine {
 
-    fn process(time: f32, time_step: f32) -> f32 {
+    fn process(time: f64, time_step: f64) -> f64 {
         //TODO process voices
         return 0.0;
     }

@@ -11,10 +11,10 @@ impl Default for WaveForm {
 }
 
 impl WaveForm {
-    fn synthesize(&mut self, phase: f32) -> f32{
-        let f: f32;
+    fn synthesize(&mut self, phase: f64) -> f64{
+        let f: f64;
         match self {
-            WaveForm::Sine => f = (phase * (std::f64::consts::PI as f32) * 2.0).sin(),
+            WaveForm::Sine => f = (phase * (std::f64::consts::PI as f64) * 2.0).sin(),
             WaveForm::Square => {
                 if phase < 0.5 {
                     f = 1.0;
@@ -32,8 +32,8 @@ impl WaveForm {
 #[derive(Default)]
 pub struct Oscillator {
     pub waveform: WaveForm,
-    pub freq: f32,
-    phase: f32,
+    pub freq: f64,
+    phase: f64,
 }
 
 impl Oscillator {
@@ -46,7 +46,7 @@ impl Oscillator {
         }
     }
 
-    pub fn process(&mut self, time_step: f32) {
+    pub fn process(&mut self, time_step: f64) {
         self.phase += time_step * self.freq;
         //Modulo
         while self.phase >= 1.0 {
@@ -54,7 +54,7 @@ impl Oscillator {
         }
     }
 
-    pub fn synthesize(&mut self) -> f32{
+    pub fn synthesize(&mut self) -> f64{
         let sample = self.waveform.synthesize(self.phase);
         return sample;
     }

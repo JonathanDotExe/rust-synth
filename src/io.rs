@@ -2,13 +2,26 @@ use midir::{MidiInput, MidiInputConnection, Ignore};
 use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
 use cpal::Sample;
 
+pub struct ProcessingInfo {
+    sample_rate: u32,
+    time_step: f64,
+}
+
+pub trait AudioMidiProcessor {
+
+    fn setup(info: ProcessingInfo);
+
+    fn process(&mut self) -> f64;
+
+}
+
 pub struct AudioMidiHandler {
     _midiconn: MidiInputConnection<()>,
 }
 
 impl AudioMidiHandler {
 
-    pub fn new() -> AudioMidiHandler {
+    pub fn new<T: AudioMidiProcessor>(processor: T)-> AudioMidiHandler {
         //Audio
         // Create audio pipeline
         let host = cpal::default_host();
@@ -24,20 +37,24 @@ impl AudioMidiHandler {
         println!("{} / {}", range.min_sample_rate().0, range.max_sample_rate().0);
         let channels = range.channels() as u128;
         let config = range.with_sample_rate(cpal::SampleRate(sample_rate)).config();
-        let time_step: f32 = 1.0/(sample_rate as f32);
-        let mut sample_count: u128 = 0;
-        let mut s = 0.0;
+        let time_step: f64 = 1.0/(sample_rate as f64);
+
+        let info = ProcessingInfo {sample_rate: sample_rate, time_step: time_step};
+        let mut curr_ch = channels;
+        let mut curr_s: f64 = 0.0;
 
         let stream = device.build_output_stream(
             &config,
             move |data: &mut [f32], _: &cpal::OutputCallbackInfo| { 
                 for sample in data.iter_mut() {
-                    if sample_count % channels == 0 {
-                        osc.process(time_step);
-                        s = osc.synthesize() * 0.2;
+
+                    if curr_ch > channels {
+                        //Process
+                        curr_s = processor.process();
+                        curr_ch = 0;
                     }
-                    *sample = Sample::from(&s);
-                    sample_count += 1;
+                    *sample = curr_s as f32;
+                    curr_ch += 1;
                 }
             },
             move |_err| {
