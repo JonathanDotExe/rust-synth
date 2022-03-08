@@ -1,6 +1,5 @@
 use midir::{MidiInput, MidiInputConnection, Ignore};
 use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
-use cpal::Sample;
 
 pub struct ProcessingInfo {
     sample_rate: u32,
@@ -9,7 +8,7 @@ pub struct ProcessingInfo {
 
 pub trait AudioMidiProcessor {
 
-    fn setup(info: ProcessingInfo);
+    fn setup(&mut self, info: ProcessingInfo);
 
     fn process(&mut self) -> f64;
 
@@ -21,7 +20,7 @@ pub struct AudioMidiHandler {
 
 impl AudioMidiHandler {
 
-    pub fn new<T: AudioMidiProcessor>(processor: T)-> AudioMidiHandler {
+    pub fn new<>(processor: Box<dyn AudioMidiProcessor + Send>)-> AudioMidiHandler {
         //Audio
         // Create audio pipeline
         let host = cpal::default_host();
