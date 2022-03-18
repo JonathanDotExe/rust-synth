@@ -30,32 +30,28 @@ impl WaveForm {
 }
 
 #[derive(Default)]
-pub struct Oscillator {
+pub struct OscilatorConfig {
     pub waveform: WaveForm,
     pub freq: f64,
+}
+
+#[derive(Default)]
+pub struct Oscillator {
     phase: f64,
 }
 
 impl Oscillator {
 
-    pub fn new() -> Oscillator {
-        return Oscillator {
-            waveform: WaveForm::Sine,
-            freq: 440.0,
-            phase: 0.0,
-        }
-    }
-
-    pub fn process(&mut self, time_step: f64) {
-        self.phase += time_step * self.freq;
+    pub fn process(&mut self, osc: &OscilatorConfig, time_step: f64) {
+        self.phase += time_step * osc.freq;
         //Modulo
         while self.phase >= 1.0 {
             self.phase -= 1.0;
         }
     }
 
-    pub fn synthesize(&mut self) -> f64{
-        let sample = self.waveform.synthesize(self.phase);
+    pub fn synthesize(&mut self, osc: &OscilatorConfig) -> f64{
+        let sample = osc.waveform.synthesize(self.phase);
         return sample;
     }
 

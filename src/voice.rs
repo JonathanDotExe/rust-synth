@@ -13,7 +13,9 @@ impl Default for VoiceState {
 #[derive(Default)]
 pub struct Voice<T> where T: Default{
     pub state: VoiceState,
-    pub note: u8,
+    pub note: u32,
+    pub velocity: u32,
+    pub press_time: f64,
     pub data: T,
 }
 
@@ -25,7 +27,7 @@ impl<T> Voice<T> where T: Default {
 }
 
 pub struct VoiceManager<T> where T: Default{
-    voices: Vec<Voice<T>>,
+    pub voices: Vec<Voice<T>>,
 }
 
 impl<T> VoiceManager<T> where T: Default {
@@ -39,5 +41,13 @@ impl<T> VoiceManager<T> where T: Default {
             mgr.voices.push(voice);
         }
         return mgr;
+    }
+
+    fn find_next_slot() {
+
+    }
+
+    pub fn press_note(note: u32, velocity: u32) {
+
     }
 }

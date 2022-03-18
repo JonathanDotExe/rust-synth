@@ -1,35 +1,50 @@
 use crate::dsp as dsp;
 use crate::voice as voice;
-
-
-pub trait SoundEngine {
-    
-    fn process(time: f64, time_step: f64) -> f64;
-
-}
+use crate::io as io;
 
 #[derive(Default)]
 pub struct SynthVoice {
-    pub osc: dsp::Oscillator,
+    pub osc1: dsp::Oscillator,
+    pub osc2: dsp::Oscillator,
+}
+
+#[derive(Default)]
+pub struct SynthPreset {
+    osc1: dsp::OscilatorConfig,
+    osc2: dsp::OscilatorConfig,
+    detune: f64,
 }
 
 pub struct SynthEngine {
-    pub voice_mgr: voice::VoiceManager<SynthVoice>,
+    voice_mgr: voice::VoiceManager<SynthVoice>,
+
+    sample_rate: u32,
+    time_step: f64,
 }
 
 impl SynthEngine {
     pub fn new() -> SynthEngine {
         return SynthEngine {
             voice_mgr: voice::VoiceManager::new(30),
+
+            sample_rate: 0,
+            time_step: 0.0,
         };
     }
 }
 
-impl SoundEngine for SynthEngine {
+impl io::AudioMidiProcessor for SynthEngine {
 
-    fn process(time: f64, time_step: f64) -> f64 {
-        //TODO process voices
-        return 0.0;
+    fn setup(&mut self, info: io::ProcessingInfo) {
+
+    }
+
+    fn process(&mut self) -> f64 {
+        
+    }
+
+    fn recieve_midi(&mut self, msg: midi::MidiMessage) {
+
     }
 
 }

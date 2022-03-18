@@ -8,6 +8,11 @@ pub struct ProcessingInfo {
     time_step: f64,
 }
 
+pub struct SampleInfo {
+    sample_count: u64,
+    time: f64,
+}
+
 pub trait AudioMidiProcessor {
 
     fn setup(&mut self, info: ProcessingInfo);
@@ -46,6 +51,7 @@ impl AudioMidiHandler {
         let time_step: f64 = 1.0/(sample_rate as f64);
 
         let info = ProcessingInfo {sample_rate: sample_rate, time_step: time_step};
+        let sample_info = SampleInfo { sample_count: 0, time: 0.0 };
         let mut curr_ch = channels;
         let mut curr_s: f64 = 0.0;
 
@@ -86,7 +92,7 @@ impl AudioMidiHandler {
         let midiconn = midiin.connect(port, "App-In", move |stamp, message, _| {
             println!("Midi Message {}: {:?} (len={}", stamp, message, message.len());
             let msg = midi::MidiMessage::new(message);
-            if (msg.is_ok()) {
+            if msg.is_ok() {
                 sender.send(msg.unwrap());
             }
         }, ()).unwrap();
