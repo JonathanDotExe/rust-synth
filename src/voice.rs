@@ -1,3 +1,6 @@
+use crate::io as io;
+
+#[derive(PartialEq)]
 pub enum VoiceState {
     Incative,
     Pressed,
@@ -32,7 +35,7 @@ pub struct VoiceManager<T> where T: Default{
 
 pub trait VoiceProcessor<T> where T: Default{
 
-    fn process(voice: &Voice<T>, data: &mut T);
+    fn process(&mut self, voice: &Voice<T>, data: &mut T, info: io::SampleInfo);
 
 }
 
@@ -49,11 +52,20 @@ impl<T> VoiceManager<T> where T: Default {
         return mgr;
     }
 
-    fn find_next_slot() {
+    fn find_next_slot(&mut self) -> u32 {
 
+		return 0;
     }
 
     pub fn press_note(note: u32, velocity: u32) {
 
+    }
+
+    pub fn process_voices<E: VoiceProcessor<T>>(&mut self, proc: E, info: io::SampleInfo) {
+        for voice in self.voices {
+            if voice.state != VoiceState::Incative {
+                proc.process(&voice, &mut voice.data, info);
+            }
+        }
     }
 }

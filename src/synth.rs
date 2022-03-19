@@ -41,11 +41,11 @@ impl io::AudioMidiProcessor for SynthEngine {
 
     }
 
-    fn process(&mut self, info: io::SampleInf) -> f64 {
+    fn process(&mut self, info: io::SampleInfo) -> f64 {
         return 0.0;
     }
 
-    fn recieve_midi(&mut self, msg: midi::MidiMessage, info: io::SampleInf) {
+    fn recieve_midi(&mut self, msg: midi::MidiMessage, info: io::SampleInfo) {
 
     }
 
