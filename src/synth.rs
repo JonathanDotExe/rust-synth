@@ -1,6 +1,8 @@
 use crate::dsp as dsp;
 use crate::voice as voice;
 use crate::io as io;
+use crate::midi as midi;
+
 
 #[derive(Default)]
 pub struct SynthVoice {
@@ -39,11 +41,11 @@ impl io::AudioMidiProcessor for SynthEngine {
 
     }
 
-    fn process(&mut self) -> f64 {
-        
+    fn process(&mut self, info: io::SampleInf) -> f64 {
+        return 0.0;
     }
 
-    fn recieve_midi(&mut self, msg: midi::MidiMessage) {
+    fn recieve_midi(&mut self, msg: midi::MidiMessage, info: io::SampleInf) {
 
     }
 

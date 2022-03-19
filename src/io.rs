@@ -17,9 +17,9 @@ pub trait AudioMidiProcessor {
 
     fn setup(&mut self, info: ProcessingInfo);
 
-    fn process(&mut self) -> f64;
+    fn process(&mut self, info: SampleInfo) -> f64;
 
-    fn recieve_midi(&mut self, msg: midi::MidiMessage);
+    fn recieve_midi(&mut self, msg: midi::MidiMessage, info: SampleInfo);
 
 }
 
@@ -63,12 +63,15 @@ impl AudioMidiHandler {
                         //Check midi
                         let mut msg = reciever.recv();
                         while msg.is_ok() {
-                            processor.recieve_midi(msg.unwrap());
+                            processor.recieve_midi(msg.unwrap(), sample_info);
                             msg = reciever.recv();
                         }
                         //Process
-                        curr_s = processor.process();
+                        curr_s = processor.process(sample_info);
                         curr_ch = 0;
+                        //Increment sample info
+                        sample_info.sample_count += 1;
+                        sample_info.time += info.time_step;
                     }
                     *sample = curr_s as f32;
                     curr_ch += 1;

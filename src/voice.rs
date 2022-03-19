@@ -30,6 +30,12 @@ pub struct VoiceManager<T> where T: Default{
     pub voices: Vec<Voice<T>>,
 }
 
+pub trait VoiceProcessor<T> where T: Default{
+
+    fn process(voice: &Voice<T>, data: &mut T);
+
+}
+
 impl<T> VoiceManager<T> where T: Default {
     //Init voice manager with a specific amount of polyphony
     pub fn new(size: usize) -> VoiceManager<T> {
