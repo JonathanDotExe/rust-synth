@@ -4,13 +4,13 @@ use lockfree::channel::spsc;
 use crate::midi as midi;
 
 pub struct ProcessingInfo {
-    sample_rate: u32,
-    time_step: f64,
+    pub sample_rate: u32,
+    pub time_step: f64,
 }
 
 pub struct SampleInfo {
-    sample_count: u64,
-    time: f64,
+    pub sample_count: u64,
+    pub time: f64,
 }
 
 pub trait AudioMidiProcessor {

@@ -19,6 +19,7 @@ pub struct Voice<T> where T: Default{
     pub note: u32,
     pub velocity: u32,
     pub press_time: f64,
+    pub release_time: f64,
     pub data: T,
 }
 
@@ -35,7 +36,7 @@ pub struct VoiceManager<T> where T: Default{
 
 pub trait VoiceProcessor<T> where T: Default{
 
-    fn process(&mut self, voice: &Voice<T>, data: &mut T, info: io::SampleInfo);
+    fn process_voice(&mut self, voice: &Voice<T>, data: &mut T, info: io::SampleInfo);
 
 }
 
@@ -52,19 +53,61 @@ impl<T> VoiceManager<T> where T: Default {
         return mgr;
     }
 
-    fn find_next_slot(&mut self) -> u32 {
+    fn find_next_slot(&mut self) -> usize {
+        let released = false;
+        let longest_index: usize = 0;
+        let longest_time: f64 = f64::MAX;
 
-		return 0;
+        //TODO refactor, bad code when more states are added
+        for i in 0..self.voices.len() {
+            let voice: &Voice<T> = &self.voices[i];
+            if voice.state == VoiceState::Incative {    // Note is free, use it
+                return i;
+            }
+            if voice.state == VoiceState::Released {
+                if released {  // Only counting released notes
+                    if voice.release_time < longest_time {
+                        longest_index = i;
+                        longest_time = voice.release_time;
+                    }
+                }
+                else {  // First released note, only count released notes from now on
+                    longest_index = i;
+                    longest_time = voice.release_time;
+                    released = true;
+                }
+            }
+            else if voice.press_time < longest_time{ // Check for pressed notes
+                longest_index = i;
+                longest_time = voice.press_time;
+            }
+        }
+
+		return longest_index;
     }
 
-    pub fn press_note(note: u32, velocity: u32) {
-
+    pub fn press_note(&mut self, note: u32, velocity: u32, info: io::SampleInfo) {
+        let index = self.find_next_slot();
+        self.voices[index].note = note;
+        self.voices[index].velocity = note;
+        self.voices[index].state = VoiceState::Pressed;
+        self.voices[index].press_time = info.time;
+        self.voices[index].release_time = 0.0;
     }
 
+    pub fn release_note(&mut self, note: u32, velocity: u32, info: io::SampleInfo) {
+        for mut voice in self.voices {
+            if voice.note == note {     //Check if note is equal
+                voice.state = VoiceState::Released;
+                voice.release_time = info.time;
+            }
+        }
+    }
+  
     pub fn process_voices<E: VoiceProcessor<T>>(&mut self, proc: E, info: io::SampleInfo) {
         for voice in self.voices {
             if voice.state != VoiceState::Incative {
-                proc.process(&voice, &mut voice.data, info);
+                proc.process_voice(&voice, &mut voice.data, info);
             }
         }
     }
