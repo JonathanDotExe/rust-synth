@@ -42,17 +42,14 @@ pub struct Oscillator {
 
 impl Oscillator {
 
-    pub fn process(&mut self, osc: &OscilatorConfig, time_step: f64) {
+    pub fn process(&mut self, osc: OscilatorConfig, time_step: f64) -> f64 {
         self.phase += time_step * osc.freq;
         //Modulo
         while self.phase >= 1.0 {
             self.phase -= 1.0;
         }
-    }
-
-    pub fn synthesize(&mut self, osc: &OscilatorConfig) -> f64{
-        let sample = osc.waveform.synthesize(self.phase);
-        return sample;
+        //Synthesize
+        return osc.waveform.synthesize(self.phase);
     }
 
 }

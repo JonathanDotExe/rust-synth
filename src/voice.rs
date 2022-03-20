@@ -109,7 +109,7 @@ impl<T> VoiceManager<T> where T: Default {
         }
     }
   
-    pub fn process_voices<E: VoiceProcessor<T>>(&mut self, proc: E, info: io::SampleInfo) -> f64 {
+    pub fn process_voices<E: VoiceProcessor<T>>(&mut self, proc: &mut E, info: io::SampleInfo) -> f64 {
         let mut sample = 0.0;
         for voice in self.voices {
             if voice.state != VoiceState::Incative {
