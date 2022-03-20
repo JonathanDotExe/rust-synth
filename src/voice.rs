@@ -36,7 +36,12 @@ pub struct VoiceManager<T> where T: Default{
 
 pub trait VoiceProcessor<T> where T: Default{
 
-    fn process_voice(&mut self, voice: &Voice<T>, data: &mut T, info: io::SampleInfo);
+    /**
+     * Process voices
+     * 
+     * Voices have to be set to inactive in this method
+     */
+    fn process_voice(&mut self, voice: &mut Voice<T>, info: io::SampleInfo) -> f64;
 
 }
 
@@ -95,7 +100,7 @@ impl<T> VoiceManager<T> where T: Default {
         self.voices[index].release_time = 0.0;
     }
 
-    pub fn release_note(&mut self, note: u32, velocity: u32, info: io::SampleInfo) {
+    pub fn release_note(&mut self, note: u32, info: io::SampleInfo) {
         for mut voice in self.voices {
             if voice.note == note {     //Check if note is equal
                 voice.state = VoiceState::Released;
@@ -104,11 +109,13 @@ impl<T> VoiceManager<T> where T: Default {
         }
     }
   
-    pub fn process_voices<E: VoiceProcessor<T>>(&mut self, proc: E, info: io::SampleInfo) {
+    pub fn process_voices<E: VoiceProcessor<T>>(&mut self, proc: E, info: io::SampleInfo) -> f64 {
+        let mut sample = 0.0;
         for voice in self.voices {
             if voice.state != VoiceState::Incative {
-                proc.process_voice(&voice, &mut voice.data, info);
+                sample += proc.process_voice(&mut voice, info);
             }
         }
+        return sample;
     }
 }

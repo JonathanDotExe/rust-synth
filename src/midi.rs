@@ -11,10 +11,10 @@ pub enum MidiMessageType {
 }
 
 pub struct MidiMessage {
-    message_type: MidiMessageType,
-    channel: u32,
-    first_data: u32,
-    second_data: u32,
+    pub message_type: MidiMessageType,
+    pub channel: u32,
+    pub first_data: u32,
+    pub second_data: u32,
 }
 
 impl MidiMessage {
