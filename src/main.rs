@@ -6,7 +6,8 @@ mod io;
 
 fn main() {
     //Audio
-    let mut _handler = io::AudioMidiHandler::new();
+    let synth = Box::new(synth::SynthEngine::new());
+    let mut _handler = io::AudioMidiHandler::new(synth);
 
     //Wait
     println!("Press ENTER to stop!");

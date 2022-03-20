@@ -37,11 +37,30 @@ pub struct VoiceManager<T> where T: Default{
 pub trait VoiceProcessor<T> where T: Default{
 
     /**
+     * Called when a note was pressed
+     */
+    fn voice_on(&mut self, voice: &mut Voice<T>, info: io::SampleInfo) {
+
+    }
+
+    /**
      * Process voices
-     * 
-     * Voices have to be set to inactive in this method
      */
     fn process_voice(&mut self, voice: &mut Voice<T>, info: io::SampleInfo) -> f64;
+
+    /**
+     * Checks if a not can be set invalid now
+     */
+    fn check_inactive(&mut self, voice: &Voice<T>, info: io::SampleInfo) -> bool {
+        return voice.state != VoiceState::Pressed;
+    }
+
+    /**
+     * Called when a note was released
+     */
+    fn voice_off(&mut self, voice: &mut Voice<T>, info: io::SampleInfo) {
+
+    }
 
 }
 
@@ -91,20 +110,23 @@ impl<T> VoiceManager<T> where T: Default {
 		return longest_index;
     }
 
-    pub fn press_note(&mut self, note: u32, velocity: u32, info: io::SampleInfo) {
+    pub fn press_note<E: VoiceProcessor<T>>(&mut self, proc: &mut E, note: u32, velocity: u32, info: io::SampleInfo) {
         let index = self.find_next_slot();
         self.voices[index].note = note;
         self.voices[index].velocity = note;
         self.voices[index].state = VoiceState::Pressed;
         self.voices[index].press_time = info.time;
         self.voices[index].release_time = 0.0;
+
+        proc.voice_on(&mut self.voices[index], info);
     }
 
-    pub fn release_note(&mut self, note: u32, info: io::SampleInfo) {
+    pub fn release_note<E: VoiceProcessor<T>>(&mut self, proc: &mut E, note: u32, info: io::SampleInfo) {
         for mut voice in self.voices {
             if voice.note == note {     //Check if note is equal
                 voice.state = VoiceState::Released;
                 voice.release_time = info.time;
+                proc.voice_off(&mut voice, info);
             }
         }
     }
@@ -113,7 +135,12 @@ impl<T> VoiceManager<T> where T: Default {
         let mut sample = 0.0;
         for voice in self.voices {
             if voice.state != VoiceState::Incative {
+                //Process sound
                 sample += proc.process_voice(&mut voice, info);
+                //Invalidate note
+                if proc.check_inactive(&voice, info) {
+                    voice.state = VoiceState::Incative;
+                }
             }
         }
         return sample;

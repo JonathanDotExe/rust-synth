@@ -8,6 +8,7 @@ use crate::midi as midi;
 pub struct SynthVoice {
     pub osc1: dsp::Oscillator,
     pub osc2: dsp::Oscillator,
+    pub freq: f64,
 }
 
 #[derive(Default)]
@@ -31,7 +32,7 @@ impl SynthEngine {
             preset: SynthPreset { //Simple fat saw patch
                 osc1_waveform: dsp::WaveForm::Saw,
                 osc2_waveform: dsp::WaveForm::Saw,
-                detune: 0.1,
+                detune: dsp::note_to_freq_transpose(0.1),
             },
             voice_mgr: voice::VoiceManager::new(30),
             sample_rate: 0,
@@ -43,10 +44,14 @@ impl SynthEngine {
 impl voice::VoiceProcessor<SynthVoice> for SynthEngine {
 
     fn process_voice(&mut self, voice: &mut voice::Voice<SynthVoice>, info: io::SampleInfo) -> f64 {
-        let osc1 = dsp::OscilatorConfig {waveform: self.preset.osc1_waveform, freq: 440.0};
-        let osc2 = dsp::OscilatorConfig {waveform: self.preset.osc2_waveform, freq: 220.0};
+        let osc1 = dsp::OscilatorConfig {waveform: self.preset.osc1_waveform, freq: voice.data.freq};
+        let osc2 = dsp::OscilatorConfig {waveform: self.preset.osc2_waveform, freq: voice.data.freq * self.preset.detune};
 
         return (voice.data.osc1.process(osc1, self.time_step) + voice.data.osc2.process(osc2, self.time_step)) * 0.5; //Mix both oscillators equally
+    }
+
+    fn voice_on(&mut self, voice: &mut voice::Voice<SynthVoice>, info: io::SampleInfo) {
+        voice.data.freq = dsp::note_to_freq(voice.note as f64);
     }
 
 }
@@ -65,8 +70,8 @@ impl io::AudioMidiProcessor for SynthEngine {
     fn recieve_midi(&mut self, msg: midi::MidiMessage, info: io::SampleInfo) {
         //Note on/off for voice manager
         match msg.message_type {
-            midi::MidiMessageType::NoteOn => self.voice_mgr.press_note(*msg.note(), *msg.velocity(), info),
-            midi::MidiMessageType::NoteOff => self.voice_mgr.release_note(*msg.note(), info),
+            midi::MidiMessageType::NoteOn => self.voice_mgr.press_note(self, *msg.note(), *msg.velocity(), info),
+            midi::MidiMessageType::NoteOff => self.voice_mgr.release_note(self, *msg.note(), info),
         }
     }
 
