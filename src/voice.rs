@@ -78,9 +78,9 @@ impl<T> VoiceManager<T> where T: Default {
     }
 
     fn find_next_slot(&mut self) -> usize {
-        let released = false;
-        let longest_index: usize = 0;
-        let longest_time: f64 = f64::MAX;
+        let mut released = false;
+        let mut longest_index: usize = 0;
+        let mut longest_time: f64 = f64::MAX;
 
         //TODO refactor, bad code when more states are added
         for i in 0..self.voices.len() {
@@ -122,7 +122,7 @@ impl<T> VoiceManager<T> where T: Default {
     }
 
     pub fn release_note<E: VoiceProcessor<T>>(&mut self, proc: &mut E, note: u32, info: io::SampleInfo) {
-        for mut voice in self.voices {
+        for mut voice in self.voices.iter_mut() {
             if voice.note == note {     //Check if note is equal
                 voice.state = VoiceState::Released;
                 voice.release_time = info.time;
@@ -133,7 +133,7 @@ impl<T> VoiceManager<T> where T: Default {
   
     pub fn process_voices<E: VoiceProcessor<T>>(&mut self, proc: &mut E, info: io::SampleInfo) -> f64 {
         let mut sample = 0.0;
-        for voice in self.voices {
+        for mut voice in self.voices.iter_mut() {
             if voice.state != VoiceState::Incative {
                 //Process sound
                 sample += proc.process_voice(&mut voice, info);

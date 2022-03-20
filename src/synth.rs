@@ -11,7 +11,7 @@ pub struct SynthVoice {
     pub freq: f64,
 }
 
-#[derive(Default)]
+#[derive(Default, Copy, Clone)]
 pub struct SynthPreset {
     osc1_waveform: dsp::WaveForm,
     osc2_waveform: dsp::WaveForm,
@@ -72,6 +72,7 @@ impl io::AudioMidiProcessor for SynthEngine {
         match msg.message_type {
             midi::MidiMessageType::NoteOn => self.voice_mgr.press_note(self, *msg.note(), *msg.velocity(), info),
             midi::MidiMessageType::NoteOff => self.voice_mgr.release_note(self, *msg.note(), info),
+            _ => {},
         }
     }
 

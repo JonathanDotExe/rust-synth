@@ -9,6 +9,7 @@ pub fn note_to_freq (note: f64) -> f64 {
     return 440.0 * f64::from(2.0).powf((note - 69.0)/12.0);
 }
 
+#[derive(Copy, Clone)]
 pub enum WaveForm {
     Sine,
     Saw,
@@ -22,7 +23,7 @@ impl Default for WaveForm {
 }
 
 impl WaveForm {
-    fn synthesize(&mut self, phase: f64) -> f64{
+    fn synthesize(&self, phase: f64) -> f64{
         let f: f64;
         match self {
             WaveForm::Sine => f = (phase * (std::f64::consts::PI as f64) * 2.0).sin(),

@@ -3,11 +3,13 @@ use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
 use lockfree::channel::spsc;
 use crate::midi as midi;
 
+#[derive(Copy, Clone)]
 pub struct ProcessingInfo {
     pub sample_rate: u32,
     pub time_step: f64,
 }
 
+#[derive(Copy, Clone)]
 pub struct SampleInfo {
     pub sample_count: u64,
     pub time: f64,
@@ -29,9 +31,9 @@ pub struct AudioMidiHandler {
 
 impl AudioMidiHandler {
 
-    pub fn new<>(processor: Box<dyn AudioMidiProcessor + Send>)-> AudioMidiHandler {
+    pub fn new<>(mut processor: Box<dyn AudioMidiProcessor + Send>)-> AudioMidiHandler {
         //Midi Queue
-        let (sender, reciever) = spsc::create::<midi::MidiMessage>();
+        let (mut sender, mut reciever) = spsc::create::<midi::MidiMessage>();
 
         //Audio
         // Create audio pipeline
@@ -51,7 +53,7 @@ impl AudioMidiHandler {
         let time_step: f64 = 1.0/(sample_rate as f64);
 
         let info = ProcessingInfo {sample_rate: sample_rate, time_step: time_step};
-        let sample_info = SampleInfo { sample_count: 0, time: 0.0 };
+        let mut sample_info = SampleInfo { sample_count: 0, time: 0.0 };
         let mut curr_ch = channels;
         let mut curr_s: f64 = 0.0;
 
