@@ -21,8 +21,8 @@ pub struct MidiMessage {
 impl MidiMessage {
 
     pub fn new(data: &[u8]) -> Result<MidiMessage, &'static str> {
-        let mut message_type = MidiMessageType::SysEx;
-        let mut channel: u32 = 0;
+        let mut message_type: MidiMessageType;
+        let channel;
         let mut first_data: u32 = 0;
         let mut second_data: u32 = 0;
 

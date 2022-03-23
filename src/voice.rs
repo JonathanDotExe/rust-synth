@@ -23,13 +23,6 @@ pub struct Voice<T> where T: Default{
     pub data: T,
 }
 
-
-impl<T> Voice<T> where T: Default {
-    pub fn new() -> Voice<T> {
-        return Voice::default();
-    }
-}
-
 pub struct VoiceManager<T> where T: Default{
     pub voices: Vec<Voice<T>>,
 }
@@ -39,7 +32,7 @@ pub trait VoiceProcessor<T> where T: Default{
     /**
      * Called when a note was pressed
      */
-    fn voice_on(&mut self, voice: &mut Voice<T>, info: io::SampleInfo) {
+    fn voice_on(&mut self, _voice: &mut Voice<T>, _info: io::SampleInfo) {
 
     }
 
@@ -51,14 +44,14 @@ pub trait VoiceProcessor<T> where T: Default{
     /**
      * Checks if a not can be set invalid now
      */
-    fn check_inactive(&mut self, voice: &Voice<T>, info: io::SampleInfo) -> bool {
+    fn check_inactive(&mut self, voice: &Voice<T>, _info: io::SampleInfo) -> bool {
         return voice.state != VoiceState::Pressed;
     }
 
     /**
      * Called when a note was released
      */
-    fn voice_off(&mut self, voice: &mut Voice<T>, info: io::SampleInfo) {
+    fn voice_off(&mut self, _voice: &mut Voice<T>, _info: io::SampleInfo) {
 
     }
 
@@ -113,7 +106,7 @@ impl<T> VoiceManager<T> where T: Default {
     pub fn press_note<E: VoiceProcessor<T>>(&mut self, proc: &mut E, note: u32, velocity: u32, info: io::SampleInfo) {
         let index = self.find_next_slot();
         self.voices[index].note = note;
-        self.voices[index].velocity = note;
+        self.voices[index].velocity = velocity;
         self.voices[index].state = VoiceState::Pressed;
         self.voices[index].press_time = info.time;
         self.voices[index].release_time = 0.0;

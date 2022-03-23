@@ -48,14 +48,14 @@ impl SynthEngine {
 
 impl voice::VoiceProcessor<SynthVoice> for SynthProcessor {
 
-    fn process_voice(&mut self, voice: &mut voice::Voice<SynthVoice>, info: io::SampleInfo) -> f64 {
+    fn process_voice(&mut self, voice: &mut voice::Voice<SynthVoice>, _info: io::SampleInfo) -> f64 {
         let osc1 = dsp::OscilatorConfig {waveform: self.preset.osc1_waveform, freq: voice.data.freq};
         let osc2 = dsp::OscilatorConfig {waveform: self.preset.osc2_waveform, freq: voice.data.freq * self.preset.detune};
 
         return (voice.data.osc1.process(osc1, self.time_step) + voice.data.osc2.process(osc2, self.time_step)) * 0.5; //Mix both oscillators equally
     }
 
-    fn voice_on(&mut self, voice: &mut voice::Voice<SynthVoice>, info: io::SampleInfo) {
+    fn voice_on(&mut self, voice: &mut voice::Voice<SynthVoice>, _info: io::SampleInfo) {
         voice.data.freq = dsp::note_to_freq(voice.note as f64);
     }
 
