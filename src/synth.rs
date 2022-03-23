@@ -52,7 +52,9 @@ impl voice::VoiceProcessor<SynthVoice> for SynthProcessor {
         let osc1 = dsp::OscilatorConfig {waveform: self.preset.osc1_waveform, freq: voice.data.freq};
         let osc2 = dsp::OscilatorConfig {waveform: self.preset.osc2_waveform, freq: voice.data.freq * self.preset.detune};
 
-        return (voice.data.osc1.process(osc1, self.time_step) + voice.data.osc2.process(osc2, self.time_step)) * 0.5; //Mix both oscillators equally
+        let sample = (voice.data.osc1.process(osc1, self.time_step) + voice.data.osc2.process(osc2, self.time_step)) * 0.5;
+
+        return sample; //Mix both oscillators equally
     }
 
     fn voice_on(&mut self, voice: &mut voice::Voice<SynthVoice>, _info: io::SampleInfo) {

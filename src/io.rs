@@ -58,6 +58,7 @@ impl AudioMidiHandler {
         let mut curr_ch = channels;
         let mut curr_s: f64 = 0.0;
 
+        processor.setup(info);
         let stream = device.build_output_stream(
             &config,
             move |data: &mut [f32], _: &cpal::OutputCallbackInfo| { 
