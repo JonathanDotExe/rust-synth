@@ -65,28 +65,53 @@ impl MidiMessage {
         });
     }
 
-    pub fn note(&mut self) -> &mut u32 {
+    pub fn note(&self) -> u32 {
+        return self.first_data;
+    }
+    pub fn velocity(&self) -> u32 {
+        return self.second_data;
+    }
+    pub fn polyphonic_aftertouch(&self) -> u32 {
+        return self.second_data;
+    }
+    pub fn control(&self) -> u32 {
+        return self.first_data;
+    }
+    pub fn value(&self) -> u32 {
+        return self.second_data;
+    }
+    pub fn program(&self) -> u32 {
+        return self.first_data;
+    }
+    pub fn monophonic_aftertouch(&self) -> u32 {
+        return self.second_data;
+    }
+    pub fn pitch_bend(&self) -> u32 {
+        return self.first_data;
+    }
+
+    pub fn note_mut(&mut self) -> &mut u32 {
         return &mut self.first_data;
     }
-    pub fn velocity(&mut self) -> &mut u32 {
+    pub fn velocity_mut(&mut self) -> &mut u32 {
         return &mut self.second_data;
     }
-    pub fn polyphonic_aftertouch(&mut self) -> &mut u32 {
+    pub fn polyphonic_aftertouch_mut(&mut self) -> &mut u32 {
         return &mut self.second_data;
     }
-    pub fn control(&mut self) -> &mut u32 {
+    pub fn control_mut(&mut self) -> &mut u32 {
         return &mut self.first_data;
     }
-    pub fn value(&mut self) -> &mut u32 {
+    pub fn value_mut(&mut self) -> &mut u32 {
         return &mut self.second_data;
     }
-    pub fn program(&mut self) -> &mut u32 {
+    pub fn program_mut(&mut self) -> &mut u32 {
         return &mut self.first_data;
     }
-    pub fn monophonic_aftertouch(&mut self) -> &mut u32 {
+    pub fn monophonic_aftertouch_mut(&mut self) -> &mut u32 {
         return &mut self.second_data;
     }
-    pub fn pitch_bend(&mut self) -> &mut u32 {
+    pub fn pitch_bend_mut(&mut self) -> &mut u32 {
         return &mut self.first_data;
     }
 }

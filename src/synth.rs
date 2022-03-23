@@ -19,9 +19,12 @@ pub struct SynthPreset {
 }
 
 pub struct SynthEngine {
-    pub preset: SynthPreset,
-
     voice_mgr: voice::VoiceManager<SynthVoice>,
+    proc: SynthProcessor
+}
+
+struct SynthProcessor {
+    pub preset: SynthPreset,
     sample_rate: u32,
     time_step: f64,
 }
@@ -29,19 +32,21 @@ pub struct SynthEngine {
 impl SynthEngine {
     pub fn new() -> SynthEngine {
         return SynthEngine {
-            preset: SynthPreset { //Simple fat saw patch
-                osc1_waveform: dsp::WaveForm::Saw,
-                osc2_waveform: dsp::WaveForm::Saw,
-                detune: dsp::note_to_freq_transpose(0.1),
-            },
             voice_mgr: voice::VoiceManager::new(30),
-            sample_rate: 0,
-            time_step: 0.0,
+            proc: SynthProcessor {
+                preset: SynthPreset { //Simple fat saw patch
+                    osc1_waveform: dsp::WaveForm::Saw,
+                    osc2_waveform: dsp::WaveForm::Saw,
+                    detune: dsp::note_to_freq_transpose(0.1),
+                },
+                sample_rate: 0,
+                time_step: 0.0,
+            }
         };
     }
 }
 
-impl voice::VoiceProcessor<SynthVoice> for SynthEngine {
+impl voice::VoiceProcessor<SynthVoice> for SynthProcessor {
 
     fn process_voice(&mut self, voice: &mut voice::Voice<SynthVoice>, info: io::SampleInfo) -> f64 {
         let osc1 = dsp::OscilatorConfig {waveform: self.preset.osc1_waveform, freq: voice.data.freq};
@@ -59,19 +64,19 @@ impl voice::VoiceProcessor<SynthVoice> for SynthEngine {
 impl io::AudioMidiProcessor for SynthEngine {
 
     fn setup(&mut self, info: io::ProcessingInfo) {
-        self.sample_rate = info.sample_rate;
-        self.time_step = info.time_step;
+        self.proc.sample_rate = info.sample_rate;
+        self.proc.time_step = info.time_step;
     }
 
     fn process(&mut self, info: io::SampleInfo) -> f64 {
-        return self.voice_mgr.process_voices(self, info);
+        return self.voice_mgr.process_voices(&mut self.proc, info);
     }
 
     fn recieve_midi(&mut self, msg: midi::MidiMessage, info: io::SampleInfo) {
         //Note on/off for voice manager
         match msg.message_type {
-            midi::MidiMessageType::NoteOn => self.voice_mgr.press_note(self, *msg.note(), *msg.velocity(), info),
-            midi::MidiMessageType::NoteOff => self.voice_mgr.release_note(self, *msg.note(), info),
+            midi::MidiMessageType::NoteOn => self.voice_mgr.press_note(&mut self.proc, msg.note(), msg.velocity(), info),
+            midi::MidiMessageType::NoteOff => self.voice_mgr.release_note(&mut self.proc, msg.note(), info),
             _ => {},
         }
     }
