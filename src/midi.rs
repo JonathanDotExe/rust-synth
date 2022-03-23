@@ -1,4 +1,4 @@
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum MidiMessageType {
     NoteOff,
     NoteOn,
@@ -10,6 +10,7 @@ pub enum MidiMessageType {
     SysEx 
 }
 
+#[derive(Debug)]
 pub struct MidiMessage {
     pub message_type: MidiMessageType,
     pub channel: u32,

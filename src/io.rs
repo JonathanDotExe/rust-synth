@@ -27,6 +27,7 @@ pub trait AudioMidiProcessor {
 
 pub struct AudioMidiHandler {
     _midiconn: MidiInputConnection<()>,
+    _stream: Box<dyn cpal::traits::StreamTrait>,
 }
 
 impl AudioMidiHandler {
@@ -65,7 +66,9 @@ impl AudioMidiHandler {
                         //Check midi
                         let mut msg = reciever.recv();
                         while msg.is_ok() {
-                            processor.recieve_midi(msg.unwrap(), sample_info);
+                            let message = msg.unwrap();
+                            println!("Midi Message {}", message.channel);
+                            processor.recieve_midi(message, sample_info);
                             msg = reciever.recv();
                         }
                         //Process
@@ -94,16 +97,17 @@ impl AudioMidiHandler {
         let port = &ports[0];
         println!("Using port {}!", midiin.port_name(&port).unwrap());
 
-        let midiconn = midiin.connect(port, "App-In", move |stamp, message, _| {
-            println!("Midi Message {}: {:?} (len={}", stamp, message, message.len());
+        let midiconn = midiin.connect(port, "App-In", move |_stamp, message, _| {
+            println!("Sending mesage!");
             let msg = midi::MidiMessage::new(message);
             if msg.is_ok() {
-                sender.send(msg.unwrap());
+                sender.send(msg.unwrap()).unwrap();
             }
         }, ()).unwrap();
 
         return AudioMidiHandler {
-            _midiconn: midiconn
+            _midiconn: midiconn,
+            _stream: Box::new(stream),
         };
     }
 
