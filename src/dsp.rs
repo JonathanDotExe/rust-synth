@@ -9,7 +9,7 @@ pub fn note_to_freq (note: f64) -> f64 {
     return 440.0 * f64::from(2.0).powf((note - 69.0)/12.0);
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum WaveForm {
     Sine,
     Saw,
