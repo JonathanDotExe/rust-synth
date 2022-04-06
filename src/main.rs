@@ -1,3 +1,4 @@
+mod gui;
 mod dsp;
 mod voice;
 mod synth;
@@ -9,8 +10,6 @@ fn main() {
     let synth = Box::new(synth::SynthEngine::new());
     let mut _handler = io::AudioMidiHandler::new(synth);
 
-    //Wait
-    println!("Press ENTER to stop!");
-    let mut line = String::new();
-    std::io::stdin().read_line(&mut line).unwrap();
+    //GUI
+    gui::launch_ui();
 }
