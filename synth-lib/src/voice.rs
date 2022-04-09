@@ -1,4 +1,4 @@
-use crate::io as io;
+use crate::audio as audio;
 
 #[derive(PartialEq)]
 pub enum VoiceState {
@@ -32,26 +32,26 @@ pub trait VoiceProcessor<T> where T: Default{
     /**
      * Called when a note was pressed
      */
-    fn voice_on(&mut self, _voice: &mut Voice<T>, _info: io::SampleInfo) {
+    fn voice_on(&mut self, _voice: &mut Voice<T>, _info: audio::SampleInfo) {
 
     }
 
     /**
      * Process voices
      */
-    fn process_voice(&mut self, voice: &mut Voice<T>, info: io::SampleInfo) -> f64;
+    fn process_voice(&mut self, voice: &mut Voice<T>, info: audio::SampleInfo) -> f64;
 
     /**
      * Checks if a not can be set invalid now
      */
-    fn check_inactive(&mut self, voice: &Voice<T>, _info: io::SampleInfo) -> bool {
+    fn check_inactive(&mut self, voice: &Voice<T>, _info: audio::SampleInfo) -> bool {
         return voice.state != VoiceState::Pressed;
     }
 
     /**
      * Called when a note was released
      */
-    fn voice_off(&mut self, _voice: &mut Voice<T>, _info: io::SampleInfo) {
+    fn voice_off(&mut self, _voice: &mut Voice<T>, _info: audio::SampleInfo) {
 
     }
 
@@ -103,7 +103,7 @@ impl<T> VoiceManager<T> where T: Default {
 		return longest_index;
     }
 
-    pub fn press_note<E: VoiceProcessor<T>>(&mut self, proc: &mut E, note: u32, velocity: u32, info: io::SampleInfo) {
+    pub fn press_note<E: VoiceProcessor<T>>(&mut self, proc: &mut E, note: u32, velocity: u32, info: audio::SampleInfo) {
         let index = self.find_next_slot();
         self.voices[index].note = note;
         self.voices[index].velocity = velocity;
@@ -114,7 +114,7 @@ impl<T> VoiceManager<T> where T: Default {
         proc.voice_on(&mut self.voices[index], info);
     }
 
-    pub fn release_note<E: VoiceProcessor<T>>(&mut self, proc: &mut E, note: u32, info: io::SampleInfo) {
+    pub fn release_note<E: VoiceProcessor<T>>(&mut self, proc: &mut E, note: u32, info: audio::SampleInfo) {
         for mut voice in self.voices.iter_mut() {
             if voice.note == note {     //Check if note is equal
                 voice.state = VoiceState::Released;
@@ -124,7 +124,7 @@ impl<T> VoiceManager<T> where T: Default {
         }
     }
   
-    pub fn process_voices<E: VoiceProcessor<T>>(&mut self, proc: &mut E, info: io::SampleInfo) -> f64 {
+    pub fn process_voices<E: VoiceProcessor<T>>(&mut self, proc: &mut E, info: audio::SampleInfo) -> f64 {
         let mut sample = 0.0;
         for mut voice in self.voices.iter_mut() {
             if voice.state != VoiceState::Incative {

@@ -1,17 +1,12 @@
 use druid::{Widget, Data, WindowDesc, AppLauncher, widget::{Label, Flex}, Env};
 
-use crate::dsp as dsp;
-
-impl Data for dsp::WaveForm {
-    fn same(&self, other: &Self) -> bool {
-        return self == other;
-    }
-}
-
+use synth_lib::dsp;
 
 #[derive(Default, Clone, Data)]
 struct SynthModel {
+    #[data(same_fn = "PartialEq::eq")]
     pub waveform1: dsp::WaveForm,
+    #[data(same_fn = "PartialEq::eq")]
     pub waveform2: dsp::WaveForm,
     pub volume1: f64,
     pub volume2: f64,
@@ -20,6 +15,7 @@ struct SynthModel {
 }
 
 fn build_main_ui() -> impl Widget<SynthModel> {
+    //Top Panel
     let waveform1_label = Label::dynamic(|model: &SynthModel, _env| {
         return format!("Waveform 1: {}", model.waveform1);
     });

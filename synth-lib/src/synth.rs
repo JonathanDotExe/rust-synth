@@ -1,6 +1,6 @@
 use crate::dsp as dsp;
 use crate::voice as voice;
-use crate::io as io;
+use crate::audio;
 use crate::midi as midi;
 
 
@@ -48,7 +48,7 @@ impl SynthEngine {
 
 impl voice::VoiceProcessor<SynthVoice> for SynthProcessor {
 
-    fn process_voice(&mut self, voice: &mut voice::Voice<SynthVoice>, _info: io::SampleInfo) -> f64 {
+    fn process_voice(&mut self, voice: &mut voice::Voice<SynthVoice>, _info: audio::SampleInfo) -> f64 {
         let osc1 = dsp::OscilatorConfig {waveform: self.preset.osc1_waveform, freq: voice.data.freq};
         let osc2 = dsp::OscilatorConfig {waveform: self.preset.osc2_waveform, freq: voice.data.freq * self.preset.detune};
 
@@ -57,24 +57,24 @@ impl voice::VoiceProcessor<SynthVoice> for SynthProcessor {
         return sample; //Mix both oscillators equally
     }
 
-    fn voice_on(&mut self, voice: &mut voice::Voice<SynthVoice>, _info: io::SampleInfo) {
+    fn voice_on(&mut self, voice: &mut voice::Voice<SynthVoice>, _info: audio::SampleInfo) {
         voice.data.freq = dsp::note_to_freq(voice.note as f64);
     }
 
 }
 
-impl io::AudioMidiProcessor for SynthEngine {
+impl audio::AudioMidiProcessor for SynthEngine {
 
-    fn setup(&mut self, info: io::ProcessingInfo) {
+    fn setup(&mut self, info: audio::ProcessingInfo) {
         self.proc.sample_rate = info.sample_rate;
         self.proc.time_step = info.time_step;
     }
 
-    fn process(&mut self, info: io::SampleInfo) -> f64 {
+    fn process(&mut self, info: audio::SampleInfo) -> f64 {
         return self.voice_mgr.process_voices(&mut self.proc, info);
     }
 
-    fn recieve_midi(&mut self, msg: midi::MidiMessage, info: io::SampleInfo) {
+    fn recieve_midi(&mut self, msg: midi::MidiMessage, info: audio::SampleInfo) {
         //Note on/off for voice manager
         match msg.message_type {
             midi::MidiMessageType::NoteOn => self.voice_mgr.press_note(&mut self.proc, msg.note(), msg.velocity(), info),

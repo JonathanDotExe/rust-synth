@@ -1,29 +1,7 @@
 use midir::{MidiInput, MidiInputConnection, Ignore};
 use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
 use lockfree::channel::spsc;
-use crate::midi as midi;
-
-#[derive(Copy, Clone)]
-pub struct ProcessingInfo {
-    pub sample_rate: u32,
-    pub time_step: f64,
-}
-
-#[derive(Copy, Clone)]
-pub struct SampleInfo {
-    pub sample_count: u64,
-    pub time: f64,
-}
-
-pub trait AudioMidiProcessor {
-
-    fn setup(&mut self, info: ProcessingInfo);
-
-    fn process(&mut self, info: SampleInfo) -> f64;
-
-    fn recieve_midi(&mut self, msg: midi::MidiMessage, info: SampleInfo);
-
-}
+use synth_lib::{midi as midi, audio::{AudioMidiProcessor, ProcessingInfo, SampleInfo}};
 
 pub struct AudioMidiHandler {
     _midiconn: MidiInputConnection<()>,
@@ -53,8 +31,8 @@ impl AudioMidiHandler {
         let config = range.with_sample_rate(cpal::SampleRate(sample_rate)).config();
         let time_step: f64 = 1.0/(sample_rate as f64);
 
-        let info = ProcessingInfo {sample_rate: sample_rate, time_step: time_step};
-        let mut sample_info = SampleInfo { sample_count: 0, time: 0.0 };
+        let info = synth_lib::audio::ProcessingInfo {sample_rate: sample_rate, time_step: time_step};
+        let mut sample_info = synth_lib::audio::SampleInfo { sample_count: 0, time: 0.0 };
         let mut curr_ch = channels;
         let mut curr_s: f64 = 0.0;
 
