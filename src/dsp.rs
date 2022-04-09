@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 
 #[inline]
 pub fn note_to_freq_transpose (note: f64) -> f64 {
@@ -19,6 +21,16 @@ pub enum WaveForm {
 impl Default for WaveForm {
     fn default() -> Self {
         return WaveForm::Sine;
+    }
+}
+
+impl Display for WaveForm {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match self {
+            WaveForm::Sine => "Sine",
+            WaveForm::Square => "Square",
+            WaveForm::Saw => "Saw",
+        })
     }
 }
 

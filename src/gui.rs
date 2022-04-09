@@ -1,6 +1,15 @@
+use druid::{Widget, Data, WindowDesc, AppLauncher, widget::{Label, Flex}, Env};
+
 use crate::dsp as dsp;
 
-#[derive(Default)]
+impl Data for dsp::WaveForm {
+    fn same(&self, other: &Self) -> bool {
+        return self == other;
+    }
+}
+
+
+#[derive(Default, Clone, Data)]
 struct SynthModel {
     pub waveform1: dsp::WaveForm,
     pub waveform2: dsp::WaveForm,
@@ -10,12 +19,18 @@ struct SynthModel {
     pub filter_cutoff: f64,
 }
 
-#[derive(Default)]
-struct SynthApp {
-    pub model: SynthModel
+fn build_main_ui() -> impl Widget<SynthModel> {
+    let waveform1_label = Label::dynamic(|model: &SynthModel, _env| {
+        return format!("Waveform 1: {}", model.waveform1);
+    });
+
+    let layout = Flex::column()
+        .with_child(waveform1_label);
+    return layout;
 }
 
-
 pub fn launch_ui() {
-    
+    let window = WindowDesc::new(build_main_ui).title("Simple Rust Synth");
+    let model = SynthModel::default();
+    AppLauncher::with_window(window).launch(model).expect("Failed to launch app!");
 }
