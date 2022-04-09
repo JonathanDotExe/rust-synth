@@ -1,4 +1,4 @@
-use druid::{Widget, Data, WindowDesc, AppLauncher, widget::{Label, Flex}, Env};
+use druid::{Widget, Data, WindowDesc, AppLauncher, widget::{Label, Flex}};
 
 use synth_lib::dsp;
 

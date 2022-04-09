@@ -1,7 +1,7 @@
 use midir::{MidiInput, MidiInputConnection, Ignore};
 use cpal::traits::{HostTrait, DeviceTrait, StreamTrait};
 use lockfree::channel::spsc;
-use synth_lib::{midi as midi, audio::{AudioMidiProcessor, ProcessingInfo, SampleInfo}};
+use synth_lib::{midi as midi, audio::{AudioMidiProcessor}};
 
 pub struct AudioMidiHandler {
     _midiconn: MidiInputConnection<()>,
