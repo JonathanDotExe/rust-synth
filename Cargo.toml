@@ -3,4 +3,5 @@
 members = [
     "synth-lib",
     "synth-standalone",
+    "synth-plugin-lib"
 ]
