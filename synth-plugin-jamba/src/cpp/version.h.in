@@ -1,0 +1,36 @@
+#ifndef VST3_JAMBA_RustDemoPlugin_VERSION_H
+#define VST3_JAMBA_RustDemoPlugin_VERSION_H
+
+#define MAJOR_VERSION_STR "@PLUGIN_MAJOR_VERSION@"
+#define MAJOR_VERSION_INT @PLUGIN_MAJOR_VERSION@
+
+#define MINOR_VERSION_STR "@PLUGIN_MINOR_VERSION@"
+#define MINOR_VERSION_INT @PLUGIN_MINOR_VERSION@
+
+#define PATCH_NUMBER_STR "@PLUGIN_PATCH_VERSION@"
+#define PATCH_NUMBER_INT @PLUGIN_PATCH_VERSION@
+
+// Version with build number (as a string)
+#define FULL_VERSION_STR "@PLUGIN_VERSION@"
+
+// Version with build number
+#define FULL_VERSION @PLUGIN_VERSION@
+
+// Architecture
+#define BUILD_ARCHIVE_ARCHITECTURE "@JAMBA_ARCHIVE_ARCHITECTURE@"
+
+// Audio Unit version (as an hex int)
+#define AU_VERSION_INT 0x@AU_PLUGIN_VERSION_HEX@
+
+#define stringOriginalFilename	"RustDemoPlugin.vst3"
+#define stringFileDescription	"RustDemoPlugin plugin by JonathanDotExe (@JAMBA_ARCHIVE_ARCHITECTURE@)"
+#define stringCompanyName		"JonathanDotExe\0"
+#define stringLegalCopyright	"© 2022 JonathanDotExe"
+
+#ifndef NDEBUG
+#define stringPluginName "RustDemoPlugin_Debug"
+#else
+#define stringPluginName "RustDemoPlugin"
+#endif
+
+#endif // VST3_JAMBA_RustDemoPlugin_VERSION_H
