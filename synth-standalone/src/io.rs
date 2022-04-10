@@ -31,10 +31,11 @@ impl AudioMidiHandler {
         let config = range.with_sample_rate(cpal::SampleRate(sample_rate)).config();
         let time_step: f64 = 1.0/(sample_rate as f64);
 
-        let info = synth_lib::audio::ProcessingInfo {sample_rate: sample_rate, time_step: time_step};
+        let info = synth_lib::audio::ProcessingInfo {sample_rate: sample_rate, time_step: time_step, processing_mode: synth_lib::audio::ProcessingMode::Realtime};
         let mut sample_info = synth_lib::audio::SampleInfo { sample_count: 0, time: 0.0 };
         let mut curr_ch = channels;
-        let mut curr_s: f64 = 0.0;
+        let mut curr_l: f64 = 0.0;
+        let mut curr_r: f64 = 0.0;
 
         processor.setup(info);
         let stream = device.build_output_stream(
@@ -51,13 +52,19 @@ impl AudioMidiHandler {
                             msg = reciever.recv();
                         }
                         //Process
-                        curr_s = processor.process(sample_info);
+                        (curr_l, curr_r) = processor.process(sample_info);
                         curr_ch = 0;
                         //Increment sample info
                         sample_info.sample_count += 1;
                         sample_info.time += info.time_step;
                     }
-                    *sample = curr_s as f32;
+                    if (curr_ch % 2 == 0) {
+                        *sample = curr_l as f32;
+                    }
+                    else {
+                        *sample = curr_r as f32;
+                    }
+
                     curr_ch += 1;
                 }
             },

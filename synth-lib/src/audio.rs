@@ -24,7 +24,7 @@ pub trait AudioMidiProcessor {
 
     fn setup(&mut self, info: ProcessingInfo);
 
-    fn process(&mut self, info: SampleInfo) -> f64;
+    fn process(&mut self, info: SampleInfo) -> (f64, f64);
 
     fn recieve_midi(&mut self, msg: midi::MidiMessage, info: SampleInfo);
 

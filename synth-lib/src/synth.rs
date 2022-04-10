@@ -70,8 +70,9 @@ impl audio::AudioMidiProcessor for SynthEngine {
         self.proc.time_step = info.time_step;
     }
 
-    fn process(&mut self, info: audio::SampleInfo) -> f64 {
-        return self.voice_mgr.process_voices(&mut self.proc, info);
+    fn process(&mut self, info: audio::SampleInfo) -> (f64, f64) {
+        let sample = self.voice_mgr.process_voices(&mut self.proc, info);
+        return (sample, sample);
     }
 
     fn recieve_midi(&mut self, msg: midi::MidiMessage, info: audio::SampleInfo) {

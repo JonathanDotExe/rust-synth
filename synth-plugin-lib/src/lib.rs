@@ -31,6 +31,6 @@ pub unsafe extern "C" fn setup_processing(synth: *mut RustDemoSynth, params: Pro
     };
     match synth.as_mut() {
         Some(s) => s.processor.setup(info),
-        None => None,
+        None => (),
     };
 }
