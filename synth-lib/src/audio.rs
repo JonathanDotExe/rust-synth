@@ -1,9 +1,17 @@
 use crate::midi;
 
 #[derive(Copy, Clone)]
+pub enum ProcessingMode {
+    Realtime,   //Must respond in real time
+    Preload,    //Should be fast but can be processed in variable speed
+    Offline,    //Processing is offline (e.g. rendering in a DAW)
+}
+
+#[derive(Copy, Clone)]
 pub struct ProcessingInfo {
     pub sample_rate: u32,
     pub time_step: f64,
+    pub processing_mode: ProcessingMode,
 }
 
 #[derive(Copy, Clone)]
