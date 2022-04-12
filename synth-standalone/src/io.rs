@@ -32,7 +32,7 @@ impl AudioMidiHandler {
         let time_step: f64 = 1.0/(sample_rate as f64);
 
         let info = synth_lib::audio::ProcessingInfo {sample_rate: sample_rate, time_step: time_step, processing_mode: synth_lib::audio::ProcessingMode::Realtime};
-        let mut sample_info = synth_lib::audio::SampleInfo { sample_count: 0, time: 0.0 };
+        let mut sample_info = synth_lib::audio::SampleInfo { sample_count: 0, time: 0.0, jitter: false };
         let mut curr_ch = channels;
         let mut curr_l: f64 = 0.0;
         let mut curr_r: f64 = 0.0;

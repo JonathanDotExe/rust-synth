@@ -1,14 +1,15 @@
 use synth_lib::{audio::{AudioMidiProcessor, ProcessingInfo, ProcessingMode, SampleInfo}, synth::SynthEngine};
 
+#[repr(C)]
 pub struct SetupProcessingParams {
     processing_mode: i32,
     sample_rate: i32,
 }
 
+#[repr(C)]
 pub struct ProcessingParams {
     processing_mode: i32,
 }
-
 
 pub struct RustDemoSynth {
     processor: Box<dyn AudioMidiProcessor>,
@@ -22,10 +23,12 @@ pub extern "C" fn initialize(synth: &mut *mut RustDemoSynth) {
     *synth = Box::into_raw(Box::new(RustDemoSynth { processor: Box::new(SynthEngine::new()), info: ProcessingInfo::default(), time: 0.0, sample_count: 0 }))
 }
 
+#[no_mangle]
 pub unsafe extern "C" fn terminate(synth: *mut RustDemoSynth) {
     Box::from_raw(synth);
 }
 
+#[no_mangle]
 pub unsafe extern "C" fn setup_processing(synth: *mut RustDemoSynth, params: SetupProcessingParams) {
     //Create info
     let info = ProcessingInfo {
@@ -48,6 +51,7 @@ pub unsafe extern "C" fn setup_processing(synth: *mut RustDemoSynth, params: Set
     };
 }
 
+#[no_mangle]
 pub unsafe extern "C" fn process(synth: *mut RustDemoSynth, params: ProcessingParams, left: &mut f64, right: &mut f64) {
     match synth.as_mut() {
         Some(s) => {
@@ -58,10 +62,10 @@ pub unsafe extern "C" fn process(synth: *mut RustDemoSynth, params: ProcessingPa
                 jitter: params.processing_mode != 0,
             };
             //Process
-            (*left, *right) = s.processor.setup(info);
+            (*left, *right) = s.processor.process(info);
         },
         None => {
-            (*left, *right) = (0, 0);
+            (*left, *right) = (0.0, 0.0);
         },
     };
 }

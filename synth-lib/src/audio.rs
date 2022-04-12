@@ -6,6 +6,12 @@ pub enum ProcessingMode {
     Offline,    //Processing is offline (e.g. rendering in a DAW)
 }
 
+impl Default for ProcessingMode {
+    fn default() -> Self {
+        return ProcessingMode::Realtime;
+    }
+}
+
 #[derive(Copy, Clone, Default)]
 pub struct ProcessingInfo {
     pub sample_rate: u32,
