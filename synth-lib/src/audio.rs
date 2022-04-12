@@ -3,21 +3,21 @@ use crate::midi;
 #[derive(Copy, Clone)]
 pub enum ProcessingMode {
     Realtime,   //Must respond in real time
-    Preload,    //Should be fast but can be processed in variable speed
     Offline,    //Processing is offline (e.g. rendering in a DAW)
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct ProcessingInfo {
     pub sample_rate: u32,
     pub time_step: f64,
     pub processing_mode: ProcessingMode,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct SampleInfo {
     pub sample_count: u64,
     pub time: f64,
+    pub jitter: bool, //Indicates wether the sample function is called at a fixed (false) or variable (true) pace
 }
 
 pub trait AudioMidiProcessor {

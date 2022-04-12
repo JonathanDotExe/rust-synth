@@ -58,7 +58,7 @@ impl AudioMidiHandler {
                         sample_info.sample_count += 1;
                         sample_info.time += info.time_step;
                     }
-                    if (curr_ch % 2 == 0) {
+                    if curr_ch % 2 == 0 {
                         *sample = curr_l as f32;
                     }
                     else {
