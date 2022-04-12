@@ -1,4 +1,6 @@
 use synth_lib::{audio::{AudioMidiProcessor, ProcessingInfo, ProcessingMode, SampleInfo}, synth::SynthEngine};
+//TODO use libc for floats: https://rust-lang.github.io/unsafe-code-guidelines/layout/scalars.html
+
 
 #[repr(C)]
 pub struct SetupProcessingParams {
