@@ -3,6 +3,7 @@
 
 #include <pongasoft/VST/RT/RTProcessor.h>
 #include "../Plugin.h"
+#include "../RustSynthLib.h"
 
 namespace JonathanDotExe::VST::RustDemoPlugin::RT {
 
@@ -61,6 +62,10 @@ private:
 
   // The state
   RustDemoPluginRTState fState;
+
+  //The synth
+  RustDemoSynth* synth = nullptr;
+
 };
 
 }

@@ -7,6 +7,7 @@
 
 #include "version.h"
 #include "jamba_version.h"
+#include "../RustSynthLib.h"
 
 namespace JonathanDotExe::VST::RustDemoPlugin::RT {
 
@@ -20,7 +21,7 @@ RustDemoPluginProcessor::RustDemoPluginProcessor() : RTProcessor(RustDemoPluginC
          JAMBA_GIT_VERSION_STR,
          FULL_VERSION_STR,
          BUILD_ARCHIVE_ARCHITECTURE);
-
+    demo_synth_initialize(synth);
   // in Debug mode we display the parameters in a table
 #ifndef NDEBUG
   DLOG_F(INFO, "Parameters ---> \n%s", Debug::ParamTable::from(fParams).full().toString().c_str());
@@ -33,6 +34,8 @@ RustDemoPluginProcessor::RustDemoPluginProcessor() : RTProcessor(RustDemoPluginC
 RustDemoPluginProcessor::~RustDemoPluginProcessor()
 {
   DLOG_F(INFO, "~RustDemoPluginProcessor()");
+  demo_synth_terminate(synth);
+  synth = nullptr;
 }
 
 //------------------------------------------------------------------------
@@ -51,7 +54,7 @@ tresult RustDemoPluginProcessor::initialize(FUnknown *context)
   //------------------------------------------------------------------------
   // This is where you define inputs and outputs
   //------------------------------------------------------------------------
-  addAudioInput(STR16 ("Stereo In"), SpeakerArr::kStereo);
+  //addAudioInput(STR16 ("Stereo In"), SpeakerArr::kStereo);
   addAudioOutput(STR16 ("Stereo Out"), SpeakerArr::kStereo);
 
   //------------------------------------------------------------------------
@@ -87,6 +90,12 @@ tresult RustDemoPluginProcessor::setupProcessing(ProcessSetup &setup)
   if(result != kResultOk)
     return result;
 
+
+  SetupProcessingParams params;
+  params.processing_mode = setup.processMode;
+  params.sample_rate = setup.sampleRate;
+  demo_synth_setup_processing(synth, params);
+
   DLOG_F(INFO,
          "RustDemoPluginProcessor::setupProcessing(%s, %s, maxSamples=%d, sampleRate=%f)",
          setup.processMode == kRealtime ? "Realtime" : (setup.processMode == kPrefetch ? "Prefetch" : "Offline"),
@@ -104,19 +113,31 @@ tresult RustDemoPluginProcessor::setupProcessing(ProcessSetup &setup)
 template<typename SampleType>
 tresult RustDemoPluginProcessor::genericProcessInputs(ProcessData &data)
 {
-  if(data.numInputs == 0 || data.numOutputs == 0)
+  if(data.numOutputs == 0)
   {
     // nothing to do
     return kResultOk;
   }
 
-  AudioBuffers<SampleType> in(data.inputs[0], data.numSamples);
   AudioBuffers<SampleType> out(data.outputs[0], data.numSamples);
+  SampleType* left = out.getLeftChannel().getBuffer();
+  SampleType* right = out.getRightChannel().getBuffer();
 
-  // simply copy input into output
-  out.copyFrom(in);
-  
-  // use fState.fBypass to disable plugin effect...
+  for (size_t i = 0; i < out.getNumSamples(); ++i) {
+	  double l = 0;
+	  double r = 0;
+	  ProcessingParams params;
+	  params.processing_mode = data.processMode;
+	  demo_synth_process(synth, params, l, r);
+	  if (left) {
+		  left[i] = l;
+	  }
+	  if (right) {
+		  right[i] = r;
+	  }
+  }
+
+  // TODO use fState.fBypass to disable plugin effect...
 
   return kResultOk;
 }

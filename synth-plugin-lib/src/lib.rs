@@ -1,7 +1,6 @@
 use synth_lib::{audio::{AudioMidiProcessor, ProcessingInfo, ProcessingMode, SampleInfo}, synth::SynthEngine};
 //TODO use libc for floats: https://rust-lang.github.io/unsafe-code-guidelines/layout/scalars.html
 
-
 #[repr(C)]
 pub struct SetupProcessingParams {
     processing_mode: i32,
@@ -21,17 +20,17 @@ pub struct RustDemoSynth {
 }
 
 #[no_mangle]
-pub extern "C" fn initialize(synth: &mut *mut RustDemoSynth) {
+pub extern "C" fn demo_synth_initialize(synth: &mut *mut RustDemoSynth) {
     *synth = Box::into_raw(Box::new(RustDemoSynth { processor: Box::new(SynthEngine::new()), info: ProcessingInfo::default(), time: 0.0, sample_count: 0 }))
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn terminate(synth: *mut RustDemoSynth) {
+pub unsafe extern "C" fn demo_synth_terminate(synth: *mut RustDemoSynth) {
     Box::from_raw(synth);
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn setup_processing(synth: *mut RustDemoSynth, params: SetupProcessingParams) {
+pub unsafe extern "C" fn demo_synth_setup_processing(synth: *mut RustDemoSynth, params: SetupProcessingParams) {
     //Create info
     let info = ProcessingInfo {
         sample_rate: params.sample_rate as u32,
@@ -54,7 +53,7 @@ pub unsafe extern "C" fn setup_processing(synth: *mut RustDemoSynth, params: Set
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn process(synth: *mut RustDemoSynth, params: ProcessingParams, left: &mut f64, right: &mut f64) {
+pub unsafe extern "C" fn demo_synth_process(synth: *mut RustDemoSynth, params: ProcessingParams, left: &mut f64, right: &mut f64) {
     match synth.as_mut() {
         Some(s) => {
             //Create info
