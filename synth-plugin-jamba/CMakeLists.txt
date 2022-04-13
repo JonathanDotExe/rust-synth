@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 
+set(RUST_SYNTH_LIB_LOCATION "../../target/debug/synth_plugin_lib" CACHE FILEPATH "Location of the rust synth library!")
+
 # build VST 2?
 option(JAMBA_ENABLE_VST2 "Use VST2" OFF)
 
@@ -96,5 +98,5 @@ jamba_add_vst_plugin(
     TEST_CASE_SOURCES     "${test_case_sources}" # the source files containing the test cases
 #    TEST_SOURCES          "${CPP_SOURCES}/xxx.cpp" # individual files required for compiling tests but we could add ${vst_sources} if we needed more
     TEST_LINK_LIBRARIES   "jamba" # the libraries needed for linking the tests (if your tests don't depend on Jamba you can comment this out)
-
+    LINK_LIBRARIES        "${RUST_SYNTH_LIB_LOCATION}"
 )

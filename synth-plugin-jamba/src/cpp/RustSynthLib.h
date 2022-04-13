@@ -3,7 +3,7 @@
 
 #include <inttypes.h>
 
-extern struct RustDemoSynth;
+struct RustDemoSynth;
 
 struct SetupProcessingParams {
     int32_t processing_mode;
