@@ -100,3 +100,5 @@ jamba_add_vst_plugin(
     TEST_LINK_LIBRARIES   "jamba" # the libraries needed for linking the tests (if your tests don't depend on Jamba you can comment this out)
     LINK_LIBRARIES        "${RUST_SYNTH_LIB_LOCATION}"
 )
+
+target_link_libraries("JonathanDotExe_RustDemoPlugin" PUBLIC "wsock32" "ws2_32" "userenv" "bcrypt") # These are important or otherwise the static rust library won't load
