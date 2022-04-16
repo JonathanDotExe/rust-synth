@@ -119,7 +119,7 @@ tresult RustDemoPluginProcessor::genericProcessInputs(ProcessData &data)
     return kResultOk;
   }
 
-  Event& e;
+  ::Steinberg::Vst::Event event;
   size_t event_index = 0;
   size_t num_events = data.outputEvents->getEventCount();
   
@@ -129,14 +129,33 @@ tresult RustDemoPluginProcessor::genericProcessInputs(ProcessData &data)
 
   ProcessingParams params;
 	params.processing_mode = data.processMode;
+
+  //Fetch first message
+  if (num_events > 0) {
+    data.outputEvents->getEvent(event_index, event);
+  }
+  ++event_index;
   for (size_t i = 0; i < out.getNumSamples(); ++i) {
     //MIDI
-    if (event_index > 0 && event_index <= num_events) {
+    if (event_index <= num_events) {
+      //Send at the right time
       if (event.sampleOffset <= i) {
         NoteEvent note;
-        note.note = event.noteOn.pitch;
-        note.velocity = event.noteOn.velocity * 127;
-        demo_synth_note_event(synth, params, note);
+        if (event.type == kNoteOnEvent) {
+          note.note = event.noteOn.pitch;
+          note.velocity = event.noteOn.velocity * 127;
+          demo_synth_note_event(synth, params, note);
+        }
+        else if (event.type == kNoteOffEvent) {
+          note.note = event.noteOff.pitch;
+          note.velocity = 0;
+          demo_synth_note_event(synth, params, note);
+        }
+        //Fetch next message
+        if (num_events > event_index) {
+          data.outputEvents->getEvent(event_index, event);
+        }
+        ++event_index;
       }
     }
     //Synthesize

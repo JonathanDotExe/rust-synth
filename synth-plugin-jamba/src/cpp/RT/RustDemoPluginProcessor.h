@@ -8,6 +8,7 @@
 namespace JonathanDotExe::VST::RustDemoPlugin::RT {
 
 using namespace pongasoft::VST::RT;
+using namespace pongasoft::VST;
 
 //------------------------------------------------------------------------
 // RustDemoPluginProcessor - Real Time Processor
