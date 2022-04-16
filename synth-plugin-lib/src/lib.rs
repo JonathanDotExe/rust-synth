@@ -1,4 +1,4 @@
-use synth_lib::{audio::{AudioMidiProcessor, ProcessingInfo, ProcessingMode, SampleInfo}, synth::SynthEngine};
+use synth_lib::{audio::{AudioMidiProcessor, ProcessingInfo, ProcessingMode, SampleInfo}, synth::SynthEngine, midi::{MidiMessage, MidiMessageType}};
 //TODO use libc for floats: https://rust-lang.github.io/unsafe-code-guidelines/layout/scalars.html
 
 #[repr(C)]
@@ -10,6 +10,12 @@ pub struct SetupProcessingParams {
 #[repr(C)]
 pub struct ProcessingParams {
     processing_mode: i32,
+}
+
+#[repr(C)]
+pub struct NoteEvent {
+    note: u32,
+    velocity: u32,
 }
 
 pub struct RustDemoSynth {
@@ -68,5 +74,32 @@ pub unsafe extern "C" fn demo_synth_process(synth: *mut RustDemoSynth, params: P
         None => {
             (*left, *right) = (0.0, 0.0);
         },
+    };
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn demo_synth_note_event(synth: *mut RustDemoSynth, params: ProcessingParams, note: NoteEvent) {
+    match synth.as_mut() {
+        Some(s) => {
+            //Create info
+            let info = SampleInfo {
+                time: s.time,
+                sample_count: s.sample_count,
+                jitter: params.processing_mode != 0,
+            };
+            //Create midi message
+            let msg = MidiMessage {
+                message_type: match note.velocity {
+                    0 => MidiMessageType::NoteOff,
+                    _ => MidiMessageType::NoteOn,
+                },
+                channel: 0,
+                first_data: note.note,
+                second_data: note.velocity,
+            };
+            //Process
+            s.processor.recieve_midi(msg, info)
+        },
+        None => (),
     };
 }

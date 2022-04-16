@@ -14,11 +14,18 @@ struct ProcessingParams {
     int32_t processing_mode;
 };
 
+struct NoteEvent {
+    int32_t note;
+    int32_t velocity;
+};
+
 extern "C" void demo_synth_initialize(RustDemoSynth*& synth);
 
 extern "C" void demo_synth_setup_processing(RustDemoSynth* synth, SetupProcessingParams params);
 
 extern "C" void demo_synth_process(RustDemoSynth* synth, ProcessingParams params, double& left, double& right);
+
+extern "C" void demo_synth_note_event(RustDemoSynth* synth, ProcessingParams params, NoteEvent note);
 
 extern "C" void demo_synth_terminate(RustDemoSynth* synth);
 

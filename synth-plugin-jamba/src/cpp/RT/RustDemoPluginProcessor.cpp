@@ -119,15 +119,29 @@ tresult RustDemoPluginProcessor::genericProcessInputs(ProcessData &data)
     return kResultOk;
   }
 
+  Event& e;
+  size_t event_index = 0;
+  size_t num_events = data.outputEvents->getEventCount();
+  
   AudioBuffers<SampleType> out(data.outputs[0], data.numSamples);
   SampleType* left = out.getLeftChannel().getBuffer();
   SampleType* right = out.getRightChannel().getBuffer();
 
+  ProcessingParams params;
+	params.processing_mode = data.processMode;
   for (size_t i = 0; i < out.getNumSamples(); ++i) {
+    //MIDI
+    if (event_index > 0 && event_index <= num_events) {
+      if (event.sampleOffset <= i) {
+        NoteEvent note;
+        note.note = event.noteOn.pitch;
+        note.velocity = event.noteOn.velocity * 127;
+        demo_synth_note_event(synth, params, note);
+      }
+    }
+    //Synthesize
 	  double l = 0;
 	  double r = 0;
-	  ProcessingParams params;
-	  params.processing_mode = data.processMode;
 	  demo_synth_process(synth, params, l, r);
 	  if (left) {
 		  left[i] = l;
