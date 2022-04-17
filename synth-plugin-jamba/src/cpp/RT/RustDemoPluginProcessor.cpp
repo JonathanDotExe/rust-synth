@@ -1,6 +1,7 @@
 #include <pongasoft/VST/AudioBuffer.h>
 #include <pongasoft/VST/Debug/ParamTable.h>
 #include <pongasoft/VST/Debug/ParamLine.h>
+#include <pluginterfaces/vst/ivstevents.h>
 
 
 #include "RustDemoPluginProcessor.h"
@@ -119,7 +120,7 @@ tresult RustDemoPluginProcessor::genericProcessInputs(ProcessData &data)
     return kResultOk;
   }
 
-  ::Steinberg::Vst::Event event;
+  Steinberg::Vst::Event event;
   size_t event_index = 0;
   size_t num_events = data.outputEvents->getEventCount();
   
@@ -141,12 +142,12 @@ tresult RustDemoPluginProcessor::genericProcessInputs(ProcessData &data)
       //Send at the right time
       if (event.sampleOffset <= i) {
         NoteEvent note;
-        if (event.type == kNoteOnEvent) {
+        if (event.type == Event::EventTypes::kNoteOnEvent) {
           note.note = event.noteOn.pitch;
           note.velocity = event.noteOn.velocity * 127;
           demo_synth_note_event(synth, params, note);
         }
-        else if (event.type == kNoteOffEvent) {
+        else if (event.type == Event::EventTypes::kNoteOffEvent) {
           note.note = event.noteOff.pitch;
           note.velocity = 0;
           demo_synth_note_event(synth, params, note);
