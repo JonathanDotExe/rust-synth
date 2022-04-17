@@ -1,3 +1,4 @@
+use crate::audio::SampleInfo;
 use crate::dsp as dsp;
 use crate::voice as voice;
 use crate::audio;
@@ -68,6 +69,13 @@ impl audio::AudioMidiProcessor for SynthEngine {
     fn setup(&mut self, info: audio::ProcessingInfo) {
         self.proc.sample_rate = info.sample_rate;
         self.proc.time_step = info.time_step;
+        let i = SampleInfo {
+            sample_count: 0,
+            time: 0.0,
+            jitter: false,
+        };
+        //self.voice_mgr.reset(&mut self.proc, i);
+        //self.voice_mgr.press_note(&mut self.proc, 60, 127, i);
     }
 
     fn process(&mut self, info: audio::SampleInfo) -> (f64, f64) {

@@ -1,4 +1,4 @@
-use crate::audio as audio;
+use crate::audio::{self as audio, SampleInfo};
 
 #[derive(PartialEq)]
 pub enum VoiceState {
@@ -68,6 +68,14 @@ impl<T> VoiceManager<T> where T: Default {
             mgr.voices.push(voice);
         }
         return mgr;
+    }
+
+    pub fn reset<E: VoiceProcessor<T>>(&mut self, proc: &mut E, info: audio::SampleInfo) {
+        for mut voice in self.voices.iter_mut() {
+            voice.state = VoiceState::Incative;
+            voice.release_time = info.time;
+            proc.voice_off(&mut voice, info);
+        }
     }
 
     fn find_next_slot(&mut self) -> usize {
