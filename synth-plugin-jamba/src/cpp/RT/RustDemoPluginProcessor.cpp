@@ -122,7 +122,7 @@ tresult RustDemoPluginProcessor::genericProcessInputs(ProcessData &data)
 
   Steinberg::Vst::Event event;
   size_t event_index = 0;
-  size_t num_events = data.outputEvents->getEventCount();
+  size_t num_events = data.inputEvents ? data.inputEvents->getEventCount() : 0;
   
   AudioBuffers<SampleType> out(data.outputs[0], data.numSamples);
   SampleType* left = out.getLeftChannel().getBuffer();
@@ -133,14 +133,14 @@ tresult RustDemoPluginProcessor::genericProcessInputs(ProcessData &data)
 
   //Fetch first message
   if (num_events > 0) {
-    data.outputEvents->getEvent(event_index, event);
+    data.inputEvents->getEvent(event_index, event);
   }
   ++event_index;
   for (size_t i = 0; i < out.getNumSamples(); ++i) {
     //MIDI
     if (event_index <= num_events) {
       //Send at the right time
-      if (event.sampleOffset <= i) {
+      if (event.sampleOffset <= i) { //TODO simultaneous messages
         NoteEvent note;
         if (event.type == Event::EventTypes::kNoteOnEvent) {
           note.note = event.noteOn.pitch;
@@ -153,8 +153,8 @@ tresult RustDemoPluginProcessor::genericProcessInputs(ProcessData &data)
           demo_synth_note_event(synth, params, note);
         }
         //Fetch next message
-        if (num_events > event_index) {
-          data.outputEvents->getEvent(event_index, event);
+        if (event_index < num_events) {
+          data.inputEvents->getEvent(event_index, event);
         }
         ++event_index;
       }
