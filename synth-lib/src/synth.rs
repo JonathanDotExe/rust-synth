@@ -74,7 +74,7 @@ impl audio::AudioMidiProcessor for SynthEngine {
             time: 0.0,
             jitter: false,
         };
-        //self.voice_mgr.reset(&mut self.proc, i);
+        self.voice_mgr.reset(&mut self.proc, i);
         //self.voice_mgr.press_note(&mut self.proc, 60, 127, i);
     }
 

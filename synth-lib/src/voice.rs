@@ -1,4 +1,4 @@
-use crate::audio::{self as audio, SampleInfo};
+use crate::audio::{self as audio};
 
 #[derive(PartialEq)]
 pub enum VoiceState {

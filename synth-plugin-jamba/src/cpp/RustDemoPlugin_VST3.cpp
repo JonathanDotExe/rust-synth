@@ -43,6 +43,6 @@ SMTG_EXPORT_SYMBOL Steinberg::IPluginFactory* PLUGIN_API GetPluginFactory()
     "support@JonathanDotExe.com", // email
     stringPluginName, // plugin name
     FULL_VERSION_STR, // plugin version
-    Vst::PlugType::kFx // plugin category (can be changed to other like kInstrument, etc...)
+    Vst::PlugType::kInstrument // plugin category (can be changed to other like kInstrument, etc...)
    );
 }
